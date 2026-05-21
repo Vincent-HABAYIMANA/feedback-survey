@@ -1,0 +1,128 @@
+"""Curated training data: (purpose text, category).
+
+Categories are deliberately broad. Each one maps to a form template in
+templates.py. The data is synthetic but written to reflect how real users
+would describe their forms.
+"""
+
+TRAINING_EXAMPLES = [
+    # customer-satisfaction
+    ("customer satisfaction survey for our restaurant", "customer-satisfaction"),
+    ("how happy are our customers with our service", "customer-satisfaction"),
+    ("NPS net promoter score for our app", "customer-satisfaction"),
+    ("guest experience at our hotel", "customer-satisfaction"),
+    ("rate your visit to our shop", "customer-satisfaction"),
+    ("client satisfaction survey", "customer-satisfaction"),
+    ("how was your experience with our customer support", "customer-satisfaction"),
+    ("feedback after using our service", "customer-satisfaction"),
+    ("rate our delivery", "customer-satisfaction"),
+    ("how was your stay", "customer-satisfaction"),
+    ("user experience survey for our website", "customer-satisfaction"),
+    ("overall satisfaction with our company", "customer-satisfaction"),
+    ("tell us how we did", "customer-satisfaction"),
+    ("rate your last interaction with us", "customer-satisfaction"),
+    ("review our service quality", "customer-satisfaction"),
+    ("customer happiness check after onboarding", "customer-satisfaction"),
+    ("loyalty and satisfaction follow-up", "customer-satisfaction"),
+    ("we want to hear from our customers", "customer-satisfaction"),
+
+    # product-feedback
+    ("feedback about our new mobile app", "product-feedback"),
+    ("what do users think of our product", "product-feedback"),
+    ("beta tester feedback", "product-feedback"),
+    ("product feedback after launch", "product-feedback"),
+    ("how do you use our software", "product-feedback"),
+    ("feature request survey", "product-feedback"),
+    ("usability of our dashboard", "product-feedback"),
+    ("what should we build next", "product-feedback"),
+    ("review of our latest release", "product-feedback"),
+    ("collect bugs and feature ideas", "product-feedback"),
+    ("user testing for the new feature", "product-feedback"),
+    ("product market fit survey", "product-feedback"),
+    ("design feedback for our new UI", "product-feedback"),
+    ("ask users what's missing from the product", "product-feedback"),
+    ("collect issues from early users", "product-feedback"),
+
+    # event-feedback
+    ("feedback after our conference", "event-feedback"),
+    ("how was the workshop", "event-feedback"),
+    ("post-event survey for attendees", "event-feedback"),
+    ("rate the speakers at our meetup", "event-feedback"),
+    ("wedding guest experience survey", "event-feedback"),
+    ("how did you find the hackathon", "event-feedback"),
+    ("attendee feedback for our webinar", "event-feedback"),
+    ("rate the venue and the food at our gala", "event-feedback"),
+    ("post-conference attendee feedback", "event-feedback"),
+    ("survey for participants after the training day", "event-feedback"),
+    ("event organisers survey", "event-feedback"),
+    ("how was the seminar", "event-feedback"),
+    ("post-show audience feedback", "event-feedback"),
+    ("rate the concert experience", "event-feedback"),
+
+    # course-feedback
+    ("course evaluation for students", "course-feedback"),
+    ("rate the teaching of this lecturer", "course-feedback"),
+    ("end of semester feedback", "course-feedback"),
+    ("how was the bootcamp", "course-feedback"),
+    ("training session evaluation", "course-feedback"),
+    ("student feedback for our online class", "course-feedback"),
+    ("review our curriculum", "course-feedback"),
+    ("instructor feedback survey", "course-feedback"),
+    ("rate this learning module", "course-feedback"),
+    ("feedback on our tutoring program", "course-feedback"),
+    ("students rate the course", "course-feedback"),
+    ("end-of-course evaluation", "course-feedback"),
+    ("how clear was the lecture", "course-feedback"),
+    ("collect feedback from learners", "course-feedback"),
+
+    # employee-feedback
+    ("employee engagement survey", "employee-feedback"),
+    ("how happy are our employees", "employee-feedback"),
+    ("anonymous staff feedback", "employee-feedback"),
+    ("annual employee satisfaction", "employee-feedback"),
+    ("internal team morale check", "employee-feedback"),
+    ("feedback for managers from team members", "employee-feedback"),
+    ("exit interview survey", "employee-feedback"),
+    ("staff pulse check", "employee-feedback"),
+    ("workplace culture survey", "employee-feedback"),
+    ("onboarding feedback for new hires", "employee-feedback"),
+    ("how are our employees feeling this quarter", "employee-feedback"),
+    ("anonymous workplace feedback for HR", "employee-feedback"),
+    ("team retrospective", "employee-feedback"),
+
+    # general-contact / interest signup
+    ("contact form for our website", "contact"),
+    ("get in touch with us", "contact"),
+    ("contact us about our services", "contact"),
+    ("interest form for new clients", "contact"),
+    ("request a callback", "contact"),
+    ("lead generation form", "contact"),
+    ("waitlist signup", "contact"),
+    ("newsletter signup", "contact"),
+    ("request a demo", "contact"),
+    ("contact our sales team", "contact"),
+
+    # rsvp / registration
+    ("rsvp for our birthday party", "rsvp"),
+    ("event registration form", "rsvp"),
+    ("workshop sign up", "rsvp"),
+    ("party rsvp", "rsvp"),
+    ("conference registration", "rsvp"),
+    ("class signup", "rsvp"),
+    ("rsvp to our wedding", "rsvp"),
+    ("register for our free webinar", "rsvp"),
+    ("sign up for the meetup", "rsvp"),
+    ("book a slot for the workshop", "rsvp"),
+
+    # bug-report / support
+    ("bug report form", "bug-report"),
+    ("report a problem with the app", "bug-report"),
+    ("support ticket form", "bug-report"),
+    ("collect issues from customers", "bug-report"),
+    ("technical issue intake", "bug-report"),
+    ("report a defect", "bug-report"),
+    ("incident reporting", "bug-report"),
+    ("describe the bug you found", "bug-report"),
+    ("help desk request", "bug-report"),
+    ("tell us what's broken", "bug-report"),
+]

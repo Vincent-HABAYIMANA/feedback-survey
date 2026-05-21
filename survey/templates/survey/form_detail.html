@@ -5,7 +5,7 @@
   <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
     <div>
       <h1 style="margin:0;">{{ form_obj.title }}</h1>
-      <p class="meta" style="color:#6b7280;font-size:.85rem;margin:.25rem 0 0;">
+      <p style="color:#6b7280;font-size:.85rem;margin:.25rem 0 0;">
         Created {{ form_obj.created_at|date:"M j, Y" }}
       </p>
     </div>
@@ -25,14 +25,62 @@
     <button class="btn small" onclick="navigator.clipboard.writeText(document.getElementById('share-url').value); this.textContent='Copied!';">Copy</button>
   </div>
 
+  <h2 style="margin-top:2rem;display:flex;justify-content:space-between;align-items:center;">
+    Fields
+    <a href="{% url 'field-create' form_obj.slug %}" class="btn small">+ Add field</a>
+  </h2>
+
+  {% if fields %}
+    {% for field in fields %}
+      <div class="card">
+        <div style="flex:1;">
+          <div class="title">
+            {{ field.label }}
+            {% if field.required %}<span style="color:#ef4444;">*</span>{% endif %}
+          </div>
+          <div class="meta">
+            {{ field.get_field_type_display }}
+            {% if field.field_type in 'multiple_choice,checkboxes,dropdown' %}
+              · {{ field.options|length }} option{{ field.options|length|pluralize }}
+            {% endif %}
+            {% if field.field_type == 'rating' %} · 1-{{ field.rating_max }}{% endif %}
+          </div>
+        </div>
+        <div class="actions" style="display:flex;gap:.25rem;">
+          <form method="post" action="{% url 'field-reorder' form_obj.slug field.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="direction" value="up">
+            <button class="btn secondary small" type="submit" title="Move up">&uarr;</button>
+          </form>
+          <form method="post" action="{% url 'field-reorder' form_obj.slug field.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="direction" value="down">
+            <button class="btn secondary small" type="submit" title="Move down">&darr;</button>
+          </form>
+          <a href="{% url 'field-edit' form_obj.slug field.id %}" class="btn secondary small">Edit</a>
+          <form method="post" action="{% url 'field-delete' form_obj.slug field.id %}" style="display:inline;"
+                onsubmit="return confirm('Delete this field? Existing responses for it will also be deleted.');">
+            {% csrf_token %}
+            <button class="btn danger small" type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <p>No fields yet. Add your first question to start collecting answers.</p>
+      <a href="{% url 'field-create' form_obj.slug %}" class="btn">+ Add a field</a>
+    </div>
+  {% endif %}
+
   <div class="stat-row">
     <div class="stat">
       <div class="num">{{ total }}</div>
       <div class="label">response{{ total|pluralize }}</div>
     </div>
     <div class="stat">
-      <div class="num">{% if average %}{{ average }}{% else %}—{% endif %}</div>
-      <div class="label">avg rating</div>
+      <div class="num">{{ fields|length }}</div>
+      <div class="label">field{{ fields|length|pluralize }}</div>
     </div>
   </div>
 
@@ -41,29 +89,27 @@
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Rating</th>
-          <th>Liked</th>
-          <th>Comments</th>
           <th>Submitted</th>
+          {% for f in fields %}<th>{{ f.label }}</th>{% endfor %}
         </tr>
       </thead>
       <tbody>
       {% for r in responses %}
         <tr>
-          <td>{{ r.name }}</td>
-          <td>{{ r.email }}</td>
-          <td>{{ r.satisfaction }}/5</td>
-          <td>{{ r.likes|join:", " }}</td>
-          <td>{{ r.comments|default:"—" }}</td>
           <td>{{ r.submitted_at|date:"M j, Y H:i" }}</td>
+          {% for f in fields %}
+            <td>
+              {% for ans in r.answers.all %}
+                {% if ans.field_id == f.id %}{{ ans.display }}{% endif %}
+              {% endfor %}
+            </td>
+          {% endfor %}
         </tr>
       {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <div class="empty">No responses yet. Share the link above to start collecting.</div>
+    <div class="empty">No responses yet. Add fields and share the link to start collecting.</div>
   {% endif %}
 </div>
 {% endblock %}

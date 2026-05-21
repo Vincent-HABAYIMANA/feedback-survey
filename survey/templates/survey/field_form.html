@@ -1,0 +1,44 @@
+{% extends "survey/base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit field{% else %}New field{% endif %}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <p style="margin:0 0 .5rem;font-size:.85rem;color:#6b7280;">
+    <a href="{% url 'form-detail' form_obj.slug %}" style="color:#6b7280;">&larr; {{ form_obj.title }}</a>
+  </p>
+  <h1>{% if mode == 'edit' %}Edit field{% else %}Add a field{% endif %}</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <label class="field" id="row-{{ field.name }}">
+        {{ field.label }}{% if field.field.required %} *{% endif %}
+        {{ field }}
+        {% if field.help_text %}<span class="helptext">{{ field.help_text|safe }}</span>{% endif %}
+        {{ field.errors }}
+      </label>
+    {% endfor %}
+    <button type="submit" class="btn">
+      {% if mode == 'edit' %}Save changes{% else %}Add field{% endif %}
+    </button>
+    <a href="{% url 'form-detail' form_obj.slug %}" class="btn secondary" style="margin-left:.5rem;">Cancel</a>
+  </form>
+</div>
+
+<script>
+(function () {
+  // Hide/show the "options" and "rating max" rows based on selected field type.
+  const typeSelect = document.getElementById('id_field_type');
+  const optionsRow = document.getElementById('row-options_text');
+  const ratingRow = document.getElementById('row-rating_max');
+  const NEEDS_OPTIONS = new Set(['multiple_choice', 'checkboxes', 'dropdown']);
+
+  function update() {
+    const t = typeSelect.value;
+    optionsRow.style.display = NEEDS_OPTIONS.has(t) ? '' : 'none';
+    ratingRow.style.display = (t === 'rating') ? '' : 'none';
+  }
+  typeSelect.addEventListener('change', update);
+  update();
+})();
+</script>
+{% endblock %}

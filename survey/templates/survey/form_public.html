@@ -8,323 +8,146 @@
   * { box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 2rem 1rem;
-    color: #1f2937;
+    background: #f4f6f8; margin: 0; padding: 2rem 1rem; color: #1f2937;
   }
   .container {
-    max-width: 640px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 2rem 2.5rem;
-    border-radius: 12px;
+    max-width: 640px; margin: 0 auto; background: #fff;
+    padding: 2rem 2.5rem; border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
   h1 { margin-top: 0; font-size: 1.6rem; }
-  p.lead { color: #6b7280; margin-bottom: 1.5rem; white-space: pre-line; }
+  .lead { color: #6b7280; margin-bottom: 1.5rem; white-space: pre-line; }
 
-  .progress { display: flex; align-items: center; margin-bottom: 2rem; }
-  .progress .step { flex: 1; text-align: center; position: relative; }
-  .progress .dot {
-    width: 32px; height: 32px; line-height: 32px;
-    border-radius: 50%; background: #e5e7eb; color: #6b7280;
-    margin: 0 auto .35rem; font-weight: 600; transition: all .2s;
+  label.field {
+    display: block; margin-bottom: 1.25rem; font-weight: 500;
   }
-  .progress .step.active .dot { background: #2563eb; color: #fff; }
-  .progress .step.done .dot { background: #10b981; color: #fff; }
-  .progress .step .label { font-size: .8rem; color: #6b7280; }
-  .progress .step.active .label { color: #1f2937; font-weight: 600; }
-  .progress .bar {
-    flex: 0 0 40px; height: 2px; background: #e5e7eb;
-    margin: 0 -8px; align-self: flex-start; margin-top: 15px;
+  label.field .help {
+    display: block; font-weight: 400; color: #6b7280;
+    font-size: .85rem; margin-top: .15rem;
   }
-  .progress .bar.done { background: #10b981; }
-
-  fieldset {
-    border: 1px solid #e5e7eb; border-radius: 8px;
-    padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-  }
-  legend { font-weight: 600; padding: 0 .5rem; }
-  label.field { display: block; margin-bottom: 1rem; font-weight: 500; }
-  input[type="text"], input[type="email"], select, textarea {
+  .req { color: #ef4444; }
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="number"], input[type="date"], input[type="time"],
+  input[type="file"], select, textarea {
     width: 100%; padding: .55rem .7rem; margin-top: .35rem;
     border: 1px solid #d1d5db; border-radius: 6px;
     font-size: 1rem; font-family: inherit;
   }
-  input.error, select.error, textarea.error { border-color: #ef4444; }
   textarea { resize: vertical; min-height: 100px; }
-  .error-msg {
-    color: #ef4444; font-size: .85rem; margin-top: .25rem;
-    font-weight: 400; display: none;
-  }
-  .error-msg.show { display: block; }
-
-  .options label {
+  .options label, .check-options label {
     display: block; padding: .25rem 0; font-weight: 400; cursor: pointer;
+    margin-bottom: 0;
   }
-  .options input { margin-right: .5rem; }
+  .options input, .check-options input { margin-right: .5rem; }
 
   .stars { display: inline-flex; flex-direction: row-reverse; gap: .25rem; margin-top: .5rem; }
   .stars input { display: none; }
   .stars label {
     font-size: 2rem; color: #d1d5db; cursor: pointer;
-    transition: color .15s; line-height: 1;
+    transition: color .15s; line-height: 1; margin: 0;
   }
   .stars label:hover, .stars label:hover ~ label, .stars input:checked ~ label { color: #f59e0b; }
-  .rating-label { margin-left: .75rem; font-size: .9rem; color: #6b7280; vertical-align: middle; }
 
-  .summary { background: #f9fafb; border-radius: 6px; padding: 1rem; font-size: .9rem; }
-  .summary dt { font-weight: 600; color: #374151; margin-top: .5rem; }
-  .summary dt:first-child { margin-top: 0; }
-  .summary dd { margin: .15rem 0 0; color: #4b5563; }
-
-  .actions { display: flex; justify-content: space-between; margin-top: 1rem; }
   button {
     background: #2563eb; color: #fff; border: none;
     padding: .75rem 1.5rem; border-radius: 6px;
     font-size: 1rem; font-weight: 600; cursor: pointer;
   }
   button:hover { background: #1d4ed8; }
-  button.secondary { background: #e5e7eb; color: #374151; }
-  button.secondary:hover { background: #d1d5db; }
 
-  .row { display: flex; gap: 1rem; }
-  .row > label { flex: 1; }
-
-  .step-panel { display: none; }
-  .step-panel.active { display: block; }
-
-  .success { text-align: center; padding: 2rem 1rem; }
-  .success .check {
-    width: 64px; height: 64px; line-height: 64px;
-    margin: 0 auto 1rem; background: #10b981; color: #fff;
-    border-radius: 50%; font-size: 2rem;
+  .errors {
+    background: #fef2f2; border: 1px solid #fecaca;
+    color: #991b1b; padding: .75rem 1rem; border-radius: 6px;
+    margin-bottom: 1.25rem;
   }
-  .hidden { display: none; }
+  .errors ul { margin: .25rem 0 0; padding-left: 1.25rem; }
+  .empty-state {
+    text-align: center; color: #6b7280; padding: 2rem 0;
+  }
 </style>
 </head>
 <body>
   <div class="container">
-    <div id="form-wrap">
-      <h1>{{ form_obj.title }}</h1>
-      {% if form_obj.description %}<p class="lead">{{ form_obj.description }}</p>{% endif %}
+    <h1>{{ form_obj.title }}</h1>
+    {% if form_obj.description %}<p class="lead">{{ form_obj.description }}</p>{% endif %}
 
-      <div class="progress" id="progress">
-        <div class="step active" data-step="1"><div class="dot">1</div><div class="label">About you</div></div>
-        <div class="bar"></div>
-        <div class="step" data-step="2"><div class="dot">2</div><div class="label">Experience</div></div>
-        <div class="bar"></div>
-        <div class="step" data-step="3"><div class="dot">3</div><div class="label">Review</div></div>
+    {% if not fields %}
+      <div class="empty-state">
+        <p>This form has no questions yet.</p>
       </div>
-
-      <form id="survey" novalidate>
-        <div class="step-panel active" data-panel="1">
-          <fieldset>
-            <legend>About you</legend>
-            <div class="row">
-              <label class="field">Full name *
-                <input type="text" name="name" required>
-                <span class="error-msg">Please enter your name.</span>
-              </label>
-              <label class="field">Email *
-                <input type="email" name="email" required>
-                <span class="error-msg">Please enter a valid email.</span>
-              </label>
-            </div>
-            <label class="field">Age group
-              <select name="age_group">
-                <option value="">-- Select --</option>
-                <option>Under 18</option><option>18-24</option>
-                <option>25-34</option><option>35-44</option>
-                <option>45-54</option><option>55+</option>
-              </select>
-            </label>
-          </fieldset>
-          <div class="actions"><span></span><button type="button" data-next>Next &rarr;</button></div>
+    {% else %}
+      {% if errors %}
+        <div class="errors">
+          <strong>Please fix these:</strong>
+          <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
         </div>
+      {% endif %}
 
-        <div class="step-panel" data-panel="2">
-          <fieldset>
-            <legend>Your experience</legend>
-            <label class="field" style="margin-bottom:.5rem;">Overall satisfaction *</label>
-            <div>
-              <div class="stars" id="stars">
-                <input type="radio" id="s5" name="satisfaction" value="5"><label for="s5">&#9733;</label>
-                <input type="radio" id="s4" name="satisfaction" value="4"><label for="s4">&#9733;</label>
-                <input type="radio" id="s3" name="satisfaction" value="3"><label for="s3">&#9733;</label>
-                <input type="radio" id="s2" name="satisfaction" value="2"><label for="s2">&#9733;</label>
-                <input type="radio" id="s1" name="satisfaction" value="1"><label for="s1">&#9733;</label>
+      <form method="post" action="{% url 'form-public-submit' form_obj.slug %}" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% for f in fields %}
+          <label class="field">
+            {{ f.label }}{% if f.required %} <span class="req">*</span>{% endif %}
+            {% if f.help_text %}<span class="help">{{ f.help_text }}</span>{% endif %}
+
+            {% if f.field_type == 'short_text' %}
+              <input type="text" name="field_{{ f.id }}" placeholder="{{ f.placeholder }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'long_text' %}
+              <textarea name="field_{{ f.id }}" placeholder="{{ f.placeholder }}" {% if f.required %}required{% endif %}></textarea>
+
+            {% elif f.field_type == 'email' %}
+              <input type="email" name="field_{{ f.id }}" placeholder="{{ f.placeholder }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'phone' %}
+              <input type="tel" name="field_{{ f.id }}" placeholder="{{ f.placeholder }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'number' %}
+              <input type="number" name="field_{{ f.id }}" step="any" placeholder="{{ f.placeholder }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'date' %}
+              <input type="date" name="field_{{ f.id }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'time' %}
+              <input type="time" name="field_{{ f.id }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'file' %}
+              <input type="file" name="field_{{ f.id }}" {% if f.required %}required{% endif %}>
+
+            {% elif f.field_type == 'rating' %}
+              <div class="stars">
+                {% for v in f.rating_range_reversed %}
+                  <input type="radio" id="f{{ f.id }}_v{{ v }}" name="field_{{ f.id }}" value="{{ v }}" {% if f.required and forloop.last %}required{% endif %}>
+                  <label for="f{{ f.id }}_v{{ v }}">&#9733;</label>
+                {% endfor %}
               </div>
-              <span class="rating-label" id="rating-label">No rating</span>
-            </div>
-            <span class="error-msg" id="rating-error">Please choose a rating.</span>
-          </fieldset>
 
-          <fieldset>
-            <legend>What did you like?</legend>
-            <p style="margin:.25rem 0 .5rem; color:#6b7280;">Select all that apply.</p>
-            <div class="options">
-              <label><input type="checkbox" name="likes" value="Design"> Design</label>
-              <label><input type="checkbox" name="likes" value="Ease of use"> Ease of use</label>
-              <label><input type="checkbox" name="likes" value="Features"> Features</label>
-              <label><input type="checkbox" name="likes" value="Performance"> Performance</label>
-              <label><input type="checkbox" name="likes" value="Customer support"> Customer support</label>
-            </div>
-          </fieldset>
-          <div class="actions">
-            <button type="button" class="secondary" data-prev>&larr; Back</button>
-            <button type="button" data-next>Next &rarr;</button>
-          </div>
-        </div>
+            {% elif f.field_type == 'multiple_choice' %}
+              <div class="options">
+                {% for opt in f.options %}
+                  <label><input type="radio" name="field_{{ f.id }}" value="{{ opt }}" {% if f.required and forloop.first %}required{% endif %}> {{ opt }}</label>
+                {% endfor %}
+              </div>
 
-        <div class="step-panel" data-panel="3">
-          <fieldset>
-            <legend>Comments</legend>
-            <label class="field">Any additional feedback?
-              <textarea name="comments" placeholder="Tell us more..."></textarea>
-            </label>
-            <label class="field" style="font-weight:400;">
-              <input type="checkbox" name="contact_me"> You may contact me about my feedback
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Review your answers</legend>
-            <dl class="summary" id="summary"></dl>
-          </fieldset>
-          <div class="actions">
-            <button type="button" class="secondary" data-prev>&larr; Back</button>
-            <button type="submit">Submit feedback</button>
-          </div>
-        </div>
+            {% elif f.field_type == 'checkboxes' %}
+              <div class="check-options">
+                {% for opt in f.options %}
+                  <label><input type="checkbox" name="field_{{ f.id }}" value="{{ opt }}"> {{ opt }}</label>
+                {% endfor %}
+              </div>
+
+            {% elif f.field_type == 'dropdown' %}
+              <select name="field_{{ f.id }}" {% if f.required %}required{% endif %}>
+                <option value="">-- Select --</option>
+                {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+              </select>
+            {% endif %}
+          </label>
+        {% endfor %}
+
+        <button type="submit">Submit</button>
       </form>
-    </div>
-
-    <div id="success" class="success hidden">
-      <div class="check">&#10003;</div>
-      <h1>Thank you!</h1>
-      <p>Your feedback has been submitted.</p>
-    </div>
+    {% endif %}
   </div>
-
-<script>
-(function () {
-  const API_URL = "{% url 'api-submit' form_obj.slug %}";
-  const form = document.getElementById('survey');
-  const panels = form.querySelectorAll('.step-panel');
-  const progressSteps = document.querySelectorAll('#progress .step');
-  const progressBars = document.querySelectorAll('#progress .bar');
-  const ratingLabel = document.getElementById('rating-label');
-  const ratingLabels = { '1': 'Very poor', '2': 'Poor', '3': 'Okay', '4': 'Good', '5': 'Excellent' };
-  let current = 1;
-
-  function showStep(n) {
-    panels.forEach(p => p.classList.toggle('active', +p.dataset.panel === n));
-    progressSteps.forEach(s => {
-      const step = +s.dataset.step;
-      s.classList.toggle('active', step === n);
-      s.classList.toggle('done', step < n);
-    });
-    progressBars.forEach((b, i) => b.classList.toggle('done', i + 1 < n));
-    current = n;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function checkRequired(input) {
-    const msg = input.parentElement.querySelector('.error-msg');
-    if (!input.value.trim()) { input.classList.add('error'); msg && msg.classList.add('show'); return false; }
-    input.classList.remove('error'); msg && msg.classList.remove('show'); return true;
-  }
-  function checkEmail(input) {
-    const msg = input.parentElement.querySelector('.error-msg');
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(input.value.trim())) { input.classList.add('error'); msg && msg.classList.add('show'); return false; }
-    input.classList.remove('error'); msg && msg.classList.remove('show'); return true;
-  }
-  function validateStep(n) {
-    let ok = true;
-    if (n === 1) {
-      ok = checkRequired(form.elements['name']) && checkEmail(form.elements['email']) && ok;
-    } else if (n === 2) {
-      const checked = form.querySelector('input[name="satisfaction"]:checked');
-      const errEl = document.getElementById('rating-error');
-      if (!checked) { errEl.classList.add('show'); ok = false; } else { errEl.classList.remove('show'); }
-    }
-    return ok;
-  }
-  form.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('input', () => {
-      el.classList.remove('error');
-      const msg = el.parentElement.querySelector('.error-msg');
-      msg && msg.classList.remove('show');
-    });
-  });
-  document.querySelectorAll('#stars input').forEach(r => {
-    r.addEventListener('change', () => {
-      ratingLabel.textContent = ratingLabels[r.value] + ' (' + r.value + '/5)';
-      document.getElementById('rating-error').classList.remove('show');
-    });
-  });
-  form.querySelectorAll('[data-next]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!validateStep(current)) return;
-      if (current === 2) buildSummary();
-      showStep(current + 1);
-    });
-  });
-  form.querySelectorAll('[data-prev]').forEach(btn => {
-    btn.addEventListener('click', () => showStep(current - 1));
-  });
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  function buildSummary() {
-    const data = new FormData(form);
-    const likes = data.getAll('likes');
-    const rating = data.get('satisfaction');
-    const rows = [
-      ['Name', data.get('name')],
-      ['Email', data.get('email')],
-      ['Age group', data.get('age_group') || '(not provided)'],
-      ['Satisfaction', rating ? ratingLabels[rating] + ' (' + rating + '/5)' : '(none)'],
-      ['Liked', likes.length ? likes.join(', ') : '(none selected)']
-    ];
-    document.getElementById('summary').innerHTML = rows.map(([k, v]) =>
-      '<dt>' + k + '</dt><dd>' + escapeHtml(v) + '</dd>'
-    ).join('');
-  }
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    if (!validateStep(1) || !validateStep(2)) return;
-    const data = new FormData(form);
-    const payload = {
-      name: data.get('name'),
-      email: data.get('email'),
-      age_group: data.get('age_group') || '',
-      satisfaction: data.get('satisfaction'),
-      likes: data.getAll('likes'),
-      comments: data.get('comments') || '',
-      contact_me: !!data.get('contact_me'),
-    };
-    const btn = form.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.textContent = 'Submitting...';
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({error: 'Submission failed'}));
-        throw new Error(err.error || 'Submission failed');
-      }
-      document.getElementById('form-wrap').classList.add('hidden');
-      document.getElementById('success').classList.remove('hidden');
-    } catch (err) {
-      alert('Could not submit: ' + err.message);
-      btn.disabled = false; btn.textContent = 'Submit feedback';
-    }
-  });
-})();
-</script>
 </body>
 </html>

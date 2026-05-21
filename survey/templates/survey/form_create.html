@@ -1,9 +1,77 @@
 {% extends "survey/base.html" %}
 {% block title %}New form{% endblock %}
 {% block content %}
-<div class="container narrow">
+<div class="container">
   <h1>Create a new form</h1>
-  <p class="lead">Give your form a title. The structure (rating, likes, comments) is the same for all forms.</p>
+  <p class="lead">Use the AI helper to draft a form, or fill it in yourself below.</p>
+
+  <style>
+    .typing-caret {
+      display: inline-block;
+      color: #2563eb;
+      font-weight: 700;
+      animation: blink 1s steps(2) infinite;
+      margin-left: 1px;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    #ai-result button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+  </style>
+
+  <!-- AI panel -->
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:1.25rem;margin-bottom:1.5rem;">
+    <h2 style="margin:0 0 .5rem;font-size:1.05rem;">
+      <span style="background:#2563eb;color:#fff;padding:.15rem .5rem;border-radius:4px;font-size:.75rem;vertical-align:middle;">AI</span>
+      Let the assistant draft this form
+    </h2>
+    <p style="margin:0 0 .75rem;color:#475569;font-size:.9rem;">
+      Describe what your form is for. The platform's trained classifier
+      will suggest a title, description, and recommended fields.
+    </p>
+    <textarea id="ai-purpose" rows="2"
+      placeholder="e.g. customer satisfaction survey for our pizza restaurant"
+      style="width:100%;padding:.55rem .7rem;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:.95rem;"></textarea>
+    <div style="margin-top:.6rem;">
+      <button type="button" id="ai-go" class="btn small">Suggest</button>
+      <span id="ai-status" style="margin-left:.75rem;color:#6b7280;font-size:.85rem;"></span>
+    </div>
+
+    <div id="ai-result" style="display:none;margin-top:1rem;padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:6px;">
+      <div style="font-size:.8rem;color:#6b7280;margin-bottom:.5rem;">
+        <span id="ai-category"></span> · <span id="ai-confidence"></span>
+      </div>
+      <div style="font-weight:600;margin-bottom:.25rem;">Suggested title</div>
+      <div id="ai-title" style="margin-bottom:.75rem;color:#1f2937;"></div>
+
+      <div style="font-weight:600;margin-bottom:.25rem;">Suggested description</div>
+      <div id="ai-description" style="margin-bottom:.75rem;color:#4b5563;font-size:.9rem;"></div>
+
+      <div style="font-weight:600;margin-bottom:.25rem;">Suggested fields</div>
+      <ul id="ai-fields" style="margin:0 0 .75rem;padding-left:1.25rem;color:#4b5563;font-size:.9rem;"></ul>
+
+      <div style="font-size:.8rem;color:#6b7280;margin-bottom:.75rem;">
+        Also looks like: <span id="ai-alts"></span>
+      </div>
+
+      <form method="post" action="{% url 'ai-apply' %}" id="ai-accept-form">
+        {% csrf_token %}
+        <input type="hidden" name="purpose" id="ai-purpose-hidden">
+        <input type="hidden" name="title" id="ai-title-hidden">
+        <input type="hidden" name="description" id="ai-description-hidden">
+        <button type="submit" class="btn">Create this form</button>
+        <button type="button" class="btn secondary" id="ai-copy" style="margin-left:.5rem;">
+          Copy title + description below
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manual form -->
+  <h2 style="font-size:1.05rem;">Or create manually</h2>
   <form method="post" novalidate>
     {% csrf_token %}
     {% for field in form %}
@@ -17,4 +85,133 @@
     <a href="{% url 'dashboard' %}" class="btn secondary" style="margin-left:.5rem;">Cancel</a>
   </form>
 </div>
+
+<script>
+(function () {
+  const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const $purpose = document.getElementById('ai-purpose');
+  const $go = document.getElementById('ai-go');
+  const $status = document.getElementById('ai-status');
+  const $result = document.getElementById('ai-result');
+  const $category = document.getElementById('ai-category');
+  const $confidence = document.getElementById('ai-confidence');
+  const $title = document.getElementById('ai-title');
+  const $description = document.getElementById('ai-description');
+  const $fields = document.getElementById('ai-fields');
+  const $alts = document.getElementById('ai-alts');
+
+  async function suggest() {
+    const purpose = $purpose.value.trim();
+    if (!purpose) { $status.textContent = 'Please describe your form first.'; return; }
+    $go.disabled = true;
+    $status.textContent = 'Thinking...';
+    $result.style.display = 'none';
+    try {
+      const res = await fetch("{% url 'ai-suggest' %}", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+        body: JSON.stringify({purpose}),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Suggestion failed');
+      renderResult(purpose, data);
+      $status.textContent = '';
+    } catch (e) {
+      $status.textContent = 'Error: ' + e.message;
+    } finally {
+      $go.disabled = false;
+    }
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // Type `text` into `el` one character at a time. A blinking caret is
+  // shown at the end while typing, then removed.
+  async function typeInto(el, text, speedMs) {
+    el.textContent = '';
+    const caret = document.createElement('span');
+    caret.className = 'typing-caret';
+    caret.textContent = '▍';
+    el.appendChild(caret);
+    for (let i = 0; i < text.length; i++) {
+      caret.before(document.createTextNode(text[i]));
+      // Vary speed a tiny bit so it feels less robotic.
+      const jitter = (text[i] === ' ' || text[i] === ',') ? speedMs * 0.4 : 0;
+      await sleep(speedMs + jitter);
+    }
+    caret.remove();
+  }
+
+  async function renderResult(purpose, d) {
+    // These appear instantly (they are short metadata).
+    $category.textContent = 'Category: ' + d.category_label;
+    $confidence.textContent = 'Confidence ' + (d.confidence * 100).toFixed(0) + '%';
+
+    // Stash hidden values up-front so the "Create" button works even if
+    // the user clicks before the typing animation finishes.
+    document.getElementById('ai-purpose-hidden').value = purpose;
+    document.getElementById('ai-title-hidden').value = d.title;
+    document.getElementById('ai-description-hidden').value = d.description;
+
+    // Clear previous result content
+    $title.textContent = '';
+    $description.textContent = '';
+    $fields.innerHTML = '';
+    $alts.textContent = '';
+    $result.style.display = 'block';
+
+    // Disable the accept buttons while typing so they're not pressed too early.
+    const acceptBtns = document.querySelectorAll('#ai-accept-form button, #ai-copy');
+    acceptBtns.forEach(b => b.disabled = true);
+
+    // Type title, then description.
+    await typeInto($title, d.title, 25);
+    await sleep(150);
+    await typeInto($description, d.description, 12);
+    await sleep(150);
+
+    // Reveal each field one at a time, typing its label.
+    for (const f of d.fields) {
+      const li = document.createElement('li');
+      const labelSpan = document.createElement('span');
+      li.appendChild(labelSpan);
+      const meta = f.field_type.replace(/_/g, ' ');
+      const star = f.required
+        ? ' <span style="color:#ef4444;">*</span>'
+        : '';
+      $fields.appendChild(li);
+      await typeInto(labelSpan, f.label, 8);
+      // Append the meta and required-star after the label is typed.
+      const tail = document.createElement('span');
+      tail.innerHTML = star + ' <span style="color:#94a3b8;">(' + meta + ')</span>';
+      li.appendChild(tail);
+      await sleep(80);
+    }
+
+    // Alternatives appear at the end, typed quickly.
+    const altText = d.alternatives
+      .map(a => a.label + ' (' + (a.confidence * 100).toFixed(0) + '%)')
+      .join(', ');
+    await sleep(150);
+    await typeInto($alts, altText, 6);
+
+    acceptBtns.forEach(b => b.disabled = false);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  $go.addEventListener('click', suggest);
+  $purpose.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') suggest();
+  });
+
+  document.getElementById('ai-copy').addEventListener('click', () => {
+    document.getElementById('id_title').value = $title.textContent;
+    document.getElementById('id_description').value = $description.textContent;
+    document.getElementById('id_title').focus();
+  });
+})();
+</script>
 {% endblock %}
