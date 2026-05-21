@@ -1,0 +1,22 @@
+{% extends "survey/base.html" %}
+{% block title %}Welcome — Feedback Survey{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Collect feedback the easy way</h1>
+  <p class="lead">
+    Create your own feedback form in seconds, share the link with anyone, and
+    see the answers right in your dashboard.
+  </p>
+  <p style="margin-top:1.5rem;">
+    <a href="{% url 'signup' %}" class="btn">Get started — it's free</a>
+    <a href="{% url 'login' %}" class="btn secondary" style="margin-left:.5rem;">Log in</a>
+  </p>
+  <h2 style="margin-top:2.5rem;">How it works</h2>
+  <ol style="color:#4b5563;line-height:1.7;">
+    <li>Sign up for a free account.</li>
+    <li>Create a feedback form with a title and a short description.</li>
+    <li>Copy the share link and send it to your audience.</li>
+    <li>Watch the responses come in on your dashboard.</li>
+  </ol>
+</div>
+{% endblock %}

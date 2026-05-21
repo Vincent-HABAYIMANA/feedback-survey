@@ -1,12 +1,16 @@
 import json
-from pathlib import Path
 
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from .models import SurveyResponse
+from .forms import FormCreateForm, SignupForm
+from .models import Form, SurveyResponse
 
 
 def _cors(response):
@@ -16,11 +20,82 @@ def _cors(response):
     return response
 
 
+def home(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    return render(request, "survey/home.html")
+
+
+def signup(request):
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("dashboard")
+    else:
+        form = SignupForm()
+    return render(request, "survey/signup.html", {"form": form})
+
+
+@login_required
+def dashboard(request):
+    forms = Form.objects.filter(owner=request.user)
+    return render(request, "survey/dashboard.html", {"forms": forms})
+
+
+@login_required
+def form_create(request):
+    if request.method == "POST":
+        form = FormCreateForm(request.POST)
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.owner = request.user
+            new_form.save()
+            return redirect("form-detail", slug=new_form.slug)
+    else:
+        form = FormCreateForm()
+    return render(request, "survey/form_create.html", {"form": form})
+
+
+@login_required
+def form_detail(request, slug):
+    feedback_form = get_object_or_404(Form, slug=slug, owner=request.user)
+    responses = feedback_form.responses.all()
+    avg = responses.aggregate(avg=Avg("satisfaction"))["avg"]
+    share_url = request.build_absolute_uri(
+        reverse("form-public", kwargs={"slug": feedback_form.slug})
+    )
+    return render(request, "survey/form_detail.html", {
+        "form_obj": feedback_form,
+        "responses": responses,
+        "average": round(avg, 2) if avg else None,
+        "total": responses.count(),
+        "share_url": share_url,
+    })
+
+
+@login_required
+def form_delete(request, slug):
+    feedback_form = get_object_or_404(Form, slug=slug, owner=request.user)
+    if request.method == "POST":
+        feedback_form.delete()
+        return redirect("dashboard")
+    return render(request, "survey/form_delete.html", {"form_obj": feedback_form})
+
+
+def form_public(request, slug):
+    feedback_form = get_object_or_404(Form, slug=slug)
+    return render(request, "survey/form_public.html", {"form_obj": feedback_form})
+
+
 @csrf_exempt
 @require_http_methods(["POST", "OPTIONS"])
-def submit(request):
+def api_submit(request, slug):
     if request.method == "OPTIONS":
         return _cors(HttpResponse(status=204))
+
+    feedback_form = get_object_or_404(Form, slug=slug)
 
     try:
         data = json.loads(request.body.decode("utf-8"))
@@ -47,6 +122,7 @@ def submit(request):
         likes = [str(likes)]
 
     response = SurveyResponse.objects.create(
+        form=feedback_form,
         name=name,
         email=email,
         age_group=(data.get("age_group") or "").strip(),
@@ -60,22 +136,3 @@ def submit(request):
         {"id": response.id, "message": "Thanks for your feedback!"},
         status=201,
     ))
-
-
-@require_http_methods(["GET"])
-def stats(request):
-    qs = SurveyResponse.objects.all()
-    total = qs.count()
-    avg = qs.aggregate(avg=Avg("satisfaction"))["avg"]
-    return _cors(JsonResponse({
-        "total_responses": total,
-        "average_satisfaction": round(avg, 2) if avg else None,
-    }))
-
-
-@require_http_methods(["GET"])
-def form_page(request):
-    html_path = Path(__file__).resolve().parent.parent / "survey_form.html"
-    if not html_path.exists():
-        return HttpResponse("survey_form.html not found", status=404)
-    return HttpResponse(html_path.read_text(encoding="utf-8"))

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Feedback Survey{% endblock %}</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    color: #1f2937;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: .9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header .brand { font-weight: 700; font-size: 1.15rem; color: #1f2937; text-decoration: none; }
+  header nav a {
+    color: #4b5563;
+    text-decoration: none;
+    margin-left: 1.25rem;
+    font-size: .95rem;
+  }
+  header nav a:hover { color: #2563eb; }
+  header nav .user { color: #6b7280; margin-right: .5rem; }
+  main { flex: 1; padding: 2rem 1rem; }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .container.narrow { max-width: 480px; }
+  h1, h2 { margin-top: 0; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; }
+  p.lead { color: #6b7280; }
+
+  label.field { display: block; margin-bottom: 1rem; font-weight: 500; }
+  input[type="text"], input[type="email"], input[type="password"],
+  select, textarea {
+    width: 100%;
+    padding: .55rem .7rem;
+    margin-top: .35rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .errorlist { color: #ef4444; font-size: .85rem; padding-left: 1.1rem; margin: .25rem 0; }
+  .helptext { color: #6b7280; font-size: .8rem; display: block; margin-top: .25rem; }
+
+  .btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: .65rem 1.25rem;
+    border-radius: 6px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn:hover { background: #1d4ed8; }
+  .btn.secondary { background: #e5e7eb; color: #374151; }
+  .btn.secondary:hover { background: #d1d5db; }
+  .btn.danger { background: #ef4444; }
+  .btn.danger:hover { background: #dc2626; }
+  .btn.small { padding: .35rem .75rem; font-size: .85rem; }
+
+  .card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: .75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card .meta { color: #6b7280; font-size: .85rem; }
+  .card .title { font-weight: 600; }
+  .card .actions a { margin-left: .5rem; }
+
+  .copy-row {
+    display: flex;
+    gap: .5rem;
+    margin-top: .5rem;
+  }
+  .copy-row input { flex: 1; background: #f9fafb; font-family: monospace; font-size: .85rem; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .9rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #e5e7eb; }
+  th { background: #f9fafb; font-weight: 600; }
+
+  .empty {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem 1rem;
+  }
+  .stat-row { display: flex; gap: 1rem; margin: 1rem 0; }
+  .stat {
+    flex: 1;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat .num { font-size: 1.8rem; font-weight: 700; color: #2563eb; }
+  .stat .label { color: #6b7280; font-size: .85rem; }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<header>
+  <a href="{% url 'home' %}" class="brand">Feedback Survey</a>
+  <nav>
+    {% if user.is_authenticated %}
+      <span class="user">Hi, {{ user.username }}</span>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" style="background:none;border:none;color:#4b5563;cursor:pointer;font-size:.95rem;margin-left:1.25rem;padding:0;">Log out</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Log in</a>
+      <a href="{% url 'signup' %}">Sign up</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

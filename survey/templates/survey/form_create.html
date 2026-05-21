@@ -1,0 +1,20 @@
+{% extends "survey/base.html" %}
+{% block title %}New form{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Create a new form</h1>
+  <p class="lead">Give your form a title. The structure (rating, likes, comments) is the same for all forms.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <label class="field">
+        {{ field.label }}
+        {{ field }}
+        {{ field.errors }}
+      </label>
+    {% endfor %}
+    <button type="submit" class="btn">Create form</button>
+    <a href="{% url 'dashboard' %}" class="btn secondary" style="margin-left:.5rem;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "survey/base.html" %}
+{% block title %}Delete form{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Delete this form?</h1>
+  <p class="lead">
+    You are about to delete <strong>{{ form_obj.title }}</strong>. All its
+    responses will be deleted too. This cannot be undone.
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Yes, delete</button>
+    <a href="{% url 'form-detail' form_obj.slug %}" class="btn secondary" style="margin-left:.5rem;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

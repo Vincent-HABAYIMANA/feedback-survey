@@ -1,0 +1,22 @@
+{% extends "survey/base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Log in</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <label class="field">
+        {{ field.label }}
+        {{ field }}
+        {{ field.errors }}
+      </label>
+    {% endfor %}
+    {% if form.non_field_errors %}<p class="errorlist">{{ form.non_field_errors|join:"" }}</p>{% endif %}
+    <button type="submit" class="btn">Log in</button>
+  </form>
+  <p style="margin-top:1.5rem;color:#6b7280;font-size:.9rem;">
+    No account yet? <a href="{% url 'signup' %}">Sign up</a>.
+  </p>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feedback Survey</title>
+<title>{{ form_obj.title }}</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -22,142 +22,71 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
   h1 { margin-top: 0; font-size: 1.6rem; }
-  p.lead { color: #6b7280; margin-bottom: 1.5rem; }
+  p.lead { color: #6b7280; margin-bottom: 1.5rem; white-space: pre-line; }
 
-  /* Progress bar */
-  .progress {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  .progress .step {
-    flex: 1;
-    text-align: center;
-    position: relative;
-  }
+  .progress { display: flex; align-items: center; margin-bottom: 2rem; }
+  .progress .step { flex: 1; text-align: center; position: relative; }
   .progress .dot {
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    border-radius: 50%;
-    background: #e5e7eb;
-    color: #6b7280;
-    margin: 0 auto .35rem;
-    font-weight: 600;
-    transition: all .2s;
+    width: 32px; height: 32px; line-height: 32px;
+    border-radius: 50%; background: #e5e7eb; color: #6b7280;
+    margin: 0 auto .35rem; font-weight: 600; transition: all .2s;
   }
   .progress .step.active .dot { background: #2563eb; color: #fff; }
   .progress .step.done .dot { background: #10b981; color: #fff; }
   .progress .step .label { font-size: .8rem; color: #6b7280; }
   .progress .step.active .label { color: #1f2937; font-weight: 600; }
   .progress .bar {
-    flex: 0 0 40px;
-    height: 2px;
-    background: #e5e7eb;
-    margin: 0 -8px;
-    align-self: flex-start;
-    margin-top: 15px;
+    flex: 0 0 40px; height: 2px; background: #e5e7eb;
+    margin: 0 -8px; align-self: flex-start; margin-top: 15px;
   }
   .progress .bar.done { background: #10b981; }
 
   fieldset {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.25rem;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem;
   }
   legend { font-weight: 600; padding: 0 .5rem; }
   label.field { display: block; margin-bottom: 1rem; font-weight: 500; }
-  input[type="text"],
-  input[type="email"],
-  select,
-  textarea {
-    width: 100%;
-    padding: .55rem .7rem;
-    margin-top: .35rem;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-family: inherit;
+  input[type="text"], input[type="email"], select, textarea {
+    width: 100%; padding: .55rem .7rem; margin-top: .35rem;
+    border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 1rem; font-family: inherit;
   }
   input.error, select.error, textarea.error { border-color: #ef4444; }
   textarea { resize: vertical; min-height: 100px; }
   .error-msg {
-    color: #ef4444;
-    font-size: .85rem;
-    margin-top: .25rem;
-    font-weight: 400;
-    display: none;
+    color: #ef4444; font-size: .85rem; margin-top: .25rem;
+    font-weight: 400; display: none;
   }
   .error-msg.show { display: block; }
 
   .options label {
-    display: block;
-    padding: .25rem 0;
-    font-weight: 400;
-    cursor: pointer;
+    display: block; padding: .25rem 0; font-weight: 400; cursor: pointer;
   }
   .options input { margin-right: .5rem; }
 
-  /* Star rating */
-  .stars {
-    display: inline-flex;
-    flex-direction: row-reverse;
-    gap: .25rem;
-    margin-top: .5rem;
-  }
+  .stars { display: inline-flex; flex-direction: row-reverse; gap: .25rem; margin-top: .5rem; }
   .stars input { display: none; }
   .stars label {
-    font-size: 2rem;
-    color: #d1d5db;
-    cursor: pointer;
-    transition: color .15s;
-    line-height: 1;
+    font-size: 2rem; color: #d1d5db; cursor: pointer;
+    transition: color .15s; line-height: 1;
   }
-  .stars label:hover,
-  .stars label:hover ~ label,
-  .stars input:checked ~ label {
-    color: #f59e0b;
-  }
-  .rating-label {
-    margin-left: .75rem;
-    font-size: .9rem;
-    color: #6b7280;
-    vertical-align: middle;
-  }
+  .stars label:hover, .stars label:hover ~ label, .stars input:checked ~ label { color: #f59e0b; }
+  .rating-label { margin-left: .75rem; font-size: .9rem; color: #6b7280; vertical-align: middle; }
 
-  /* Review summary */
-  .summary {
-    background: #f9fafb;
-    border-radius: 6px;
-    padding: 1rem;
-    font-size: .9rem;
-  }
+  .summary { background: #f9fafb; border-radius: 6px; padding: 1rem; font-size: .9rem; }
   .summary dt { font-weight: 600; color: #374151; margin-top: .5rem; }
   .summary dt:first-child { margin-top: 0; }
   .summary dd { margin: .15rem 0 0; color: #4b5563; }
 
-  /* Buttons */
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
+  .actions { display: flex; justify-content: space-between; margin-top: 1rem; }
   button {
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    padding: .75rem 1.5rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
+    background: #2563eb; color: #fff; border: none;
+    padding: .75rem 1.5rem; border-radius: 6px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
   }
   button:hover { background: #1d4ed8; }
-  button.secondary {
-    background: #e5e7eb;
-    color: #374151;
-  }
+  button.secondary { background: #e5e7eb; color: #374151; }
   button.secondary:hover { background: #d1d5db; }
 
   .row { display: flex; gap: 1rem; }
@@ -166,20 +95,11 @@
   .step-panel { display: none; }
   .step-panel.active { display: block; }
 
-  /* Success */
-  .success {
-    text-align: center;
-    padding: 2rem 1rem;
-  }
+  .success { text-align: center; padding: 2rem 1rem; }
   .success .check {
-    width: 64px;
-    height: 64px;
-    line-height: 64px;
-    margin: 0 auto 1rem;
-    background: #10b981;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 2rem;
+    width: 64px; height: 64px; line-height: 64px;
+    margin: 0 auto 1rem; background: #10b981; color: #fff;
+    border-radius: 50%; font-size: 2rem;
   }
   .hidden { display: none; }
 </style>
@@ -187,8 +107,8 @@
 <body>
   <div class="container">
     <div id="form-wrap">
-      <h1>Feedback Survey</h1>
-      <p class="lead">Help us improve by sharing your thoughts.</p>
+      <h1>{{ form_obj.title }}</h1>
+      {% if form_obj.description %}<p class="lead">{{ form_obj.description }}</p>{% endif %}
 
       <div class="progress" id="progress">
         <div class="step active" data-step="1"><div class="dot">1</div><div class="label">About you</div></div>
@@ -199,7 +119,6 @@
       </div>
 
       <form id="survey" novalidate>
-        <!-- Step 1 -->
         <div class="step-panel active" data-panel="1">
           <fieldset>
             <legend>About you</legend>
@@ -216,33 +135,26 @@
             <label class="field">Age group
               <select name="age_group">
                 <option value="">-- Select --</option>
-                <option>Under 18</option>
-                <option>18-24</option>
-                <option>25-34</option>
-                <option>35-44</option>
-                <option>45-54</option>
-                <option>55+</option>
+                <option>Under 18</option><option>18-24</option>
+                <option>25-34</option><option>35-44</option>
+                <option>45-54</option><option>55+</option>
               </select>
             </label>
           </fieldset>
-          <div class="actions">
-            <span></span>
-            <button type="button" data-next>Next &rarr;</button>
-          </div>
+          <div class="actions"><span></span><button type="button" data-next>Next &rarr;</button></div>
         </div>
 
-        <!-- Step 2 -->
         <div class="step-panel" data-panel="2">
           <fieldset>
             <legend>Your experience</legend>
             <label class="field" style="margin-bottom:.5rem;">Overall satisfaction *</label>
             <div>
               <div class="stars" id="stars">
-                <input type="radio" id="s5" name="satisfaction" value="5"><label for="s5" title="Excellent">&#9733;</label>
-                <input type="radio" id="s4" name="satisfaction" value="4"><label for="s4" title="Good">&#9733;</label>
-                <input type="radio" id="s3" name="satisfaction" value="3"><label for="s3" title="Okay">&#9733;</label>
-                <input type="radio" id="s2" name="satisfaction" value="2"><label for="s2" title="Poor">&#9733;</label>
-                <input type="radio" id="s1" name="satisfaction" value="1"><label for="s1" title="Very poor">&#9733;</label>
+                <input type="radio" id="s5" name="satisfaction" value="5"><label for="s5">&#9733;</label>
+                <input type="radio" id="s4" name="satisfaction" value="4"><label for="s4">&#9733;</label>
+                <input type="radio" id="s3" name="satisfaction" value="3"><label for="s3">&#9733;</label>
+                <input type="radio" id="s2" name="satisfaction" value="2"><label for="s2">&#9733;</label>
+                <input type="radio" id="s1" name="satisfaction" value="1"><label for="s1">&#9733;</label>
               </div>
               <span class="rating-label" id="rating-label">No rating</span>
             </div>
@@ -266,7 +178,6 @@
           </div>
         </div>
 
-        <!-- Step 3 -->
         <div class="step-panel" data-panel="3">
           <fieldset>
             <legend>Comments</legend>
@@ -277,12 +188,10 @@
               <input type="checkbox" name="contact_me"> You may contact me about my feedback
             </label>
           </fieldset>
-
           <fieldset>
             <legend>Review your answers</legend>
             <dl class="summary" id="summary"></dl>
           </fieldset>
-
           <div class="actions">
             <button type="button" class="secondary" data-prev>&larr; Back</button>
             <button type="submit">Submit feedback</button>
@@ -291,17 +200,16 @@
       </form>
     </div>
 
-    <!-- Success screen -->
     <div id="success" class="success hidden">
       <div class="check">&#10003;</div>
       <h1>Thank you!</h1>
-      <p>Your feedback has been submitted. We appreciate you taking the time.</p>
-      <button type="button" onclick="location.reload()">Submit another response</button>
+      <p>Your feedback has been submitted.</p>
     </div>
   </div>
 
 <script>
 (function () {
+  const API_URL = "{% url 'api-submit' form_obj.slug %}";
   const form = document.getElementById('survey');
   const panels = form.querySelectorAll('.step-panel');
   const progressSteps = document.querySelectorAll('#progress .step');
@@ -321,52 +229,28 @@
     current = n;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
-  function validateStep(n) {
-    let ok = true;
-    if (n === 1) {
-      const name = form.elements['name'];
-      const email = form.elements['email'];
-      ok = checkRequired(name) && checkEmail(email) && ok;
-    } else if (n === 2) {
-      const checked = form.querySelector('input[name="satisfaction"]:checked');
-      const errEl = document.getElementById('rating-error');
-      if (!checked) {
-        errEl.classList.add('show');
-        ok = false;
-      } else {
-        errEl.classList.remove('show');
-      }
-    }
-    return ok;
-  }
-
   function checkRequired(input) {
     const msg = input.parentElement.querySelector('.error-msg');
-    if (!input.value.trim()) {
-      input.classList.add('error');
-      msg && msg.classList.add('show');
-      return false;
-    }
-    input.classList.remove('error');
-    msg && msg.classList.remove('show');
-    return true;
+    if (!input.value.trim()) { input.classList.add('error'); msg && msg.classList.add('show'); return false; }
+    input.classList.remove('error'); msg && msg.classList.remove('show'); return true;
   }
-
   function checkEmail(input) {
     const msg = input.parentElement.querySelector('.error-msg');
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(input.value.trim())) {
-      input.classList.add('error');
-      msg && msg.classList.add('show');
-      return false;
-    }
-    input.classList.remove('error');
-    msg && msg.classList.remove('show');
-    return true;
+    if (!re.test(input.value.trim())) { input.classList.add('error'); msg && msg.classList.add('show'); return false; }
+    input.classList.remove('error'); msg && msg.classList.remove('show'); return true;
   }
-
-  // Clear errors as user types
+  function validateStep(n) {
+    let ok = true;
+    if (n === 1) {
+      ok = checkRequired(form.elements['name']) && checkEmail(form.elements['email']) && ok;
+    } else if (n === 2) {
+      const checked = form.querySelector('input[name="satisfaction"]:checked');
+      const errEl = document.getElementById('rating-error');
+      if (!checked) { errEl.classList.add('show'); ok = false; } else { errEl.classList.remove('show'); }
+    }
+    return ok;
+  }
   form.querySelectorAll('input, select, textarea').forEach(el => {
     el.addEventListener('input', () => {
       el.classList.remove('error');
@@ -374,16 +258,12 @@
       msg && msg.classList.remove('show');
     });
   });
-
-  // Star rating live label
   document.querySelectorAll('#stars input').forEach(r => {
     r.addEventListener('change', () => {
       ratingLabel.textContent = ratingLabels[r.value] + ' (' + r.value + '/5)';
       document.getElementById('rating-error').classList.remove('show');
     });
   });
-
-  // Next/Back buttons
   form.querySelectorAll('[data-next]').forEach(btn => {
     btn.addEventListener('click', () => {
       if (!validateStep(current)) return;
@@ -394,12 +274,13 @@
   form.querySelectorAll('[data-prev]').forEach(btn => {
     btn.addEventListener('click', () => showStep(current - 1));
   });
-
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
   function buildSummary() {
     const data = new FormData(form);
     const likes = data.getAll('likes');
     const rating = data.get('satisfaction');
-    const summary = document.getElementById('summary');
     const rows = [
       ['Name', data.get('name')],
       ['Email', data.get('email')],
@@ -407,28 +288,13 @@
       ['Satisfaction', rating ? ratingLabels[rating] + ' (' + rating + '/5)' : '(none)'],
       ['Liked', likes.length ? likes.join(', ') : '(none selected)']
     ];
-    summary.innerHTML = rows.map(([k, v]) =>
+    document.getElementById('summary').innerHTML = rows.map(([k, v]) =>
       '<dt>' + k + '</dt><dd>' + escapeHtml(v) + '</dd>'
     ).join('');
   }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[c]));
-  }
-
-  // API endpoint — works whether form is served by Django (relative)
-  // or opened from the filesystem (absolute fallback).
-  const API_URL = (location.protocol === 'file:')
-    ? 'http://127.0.0.1:8000/api/submit/'
-    : '/api/submit/';
-
-  // Submit
   form.addEventListener('submit', async e => {
     e.preventDefault();
     if (!validateStep(1) || !validateStep(2)) return;
-
     const data = new FormData(form);
     const payload = {
       name: data.get('name'),
@@ -439,27 +305,23 @@
       comments: data.get('comments') || '',
       contact_me: !!data.get('contact_me'),
     };
-
-    const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Submitting...';
     try {
       const res = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Submission failed' }));
+        const err = await res.json().catch(() => ({error: 'Submission failed'}));
         throw new Error(err.error || 'Submission failed');
       }
       document.getElementById('form-wrap').classList.add('hidden');
       document.getElementById('success').classList.remove('hidden');
     } catch (err) {
-      alert('Could not submit: ' + err.message + '\n\nIs the Django server running at http://127.0.0.1:8000?');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit feedback';
+      alert('Could not submit: ' + err.message);
+      btn.disabled = false; btn.textContent = 'Submit feedback';
     }
   });
 })();

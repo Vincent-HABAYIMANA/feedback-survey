@@ -1,0 +1,36 @@
+{% extends "survey/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1 style="margin:0;">Your forms</h1>
+    <a href="{% url 'form-create' %}" class="btn">+ New form</a>
+  </div>
+  <p class="lead" style="margin-top:.5rem;">Create as many feedback forms as you want and share each one with a unique link.</p>
+
+  {% if forms %}
+    <div style="margin-top:1.5rem;">
+    {% for form_obj in forms %}
+      <div class="card">
+        <div>
+          <div class="title">{{ form_obj.title }}</div>
+          <div class="meta">
+            Created {{ form_obj.created_at|date:"M j, Y" }} ·
+            {{ form_obj.responses.count }} response{{ form_obj.responses.count|pluralize }}
+          </div>
+        </div>
+        <div class="actions">
+          <a href="{% url 'form-detail' form_obj.slug %}" class="btn small">View</a>
+          <a href="{% url 'form-public' form_obj.slug %}" class="btn secondary small" target="_blank">Open</a>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>You haven't created any forms yet.</p>
+      <a href="{% url 'form-create' %}" class="btn">Create your first form</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
